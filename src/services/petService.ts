@@ -23,14 +23,6 @@ const petService = {
     const response = await axios.delete(`${baseUrl}/${id}`);
     return response.data;
   },
-  searchPets: async (key: string) => {
-    const response = await axios.get(`${baseUrl}/search/${key}`);
-    return response.data;
-  },
-  getPetsByPrice: async (price: number) => {
-    const response = await axios.get(`${baseUrl}/search/price/${price}`);
-    return response.data;
-  },
 };
 
-export default petService; // Add this line to make it a default export
+export default petService;

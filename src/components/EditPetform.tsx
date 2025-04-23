@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import petService from '../services/petService';
+import petService from '../services/petService'; // Import petService for API calls
 import {
   TextField,
   Button,
@@ -8,41 +8,55 @@ import {
   Box,
 } from '@mui/material';
 
-const AddPetForm: React.FC<{ onAdd: () => void }> = ({ onAdd }) => {
-  const [name, setName] = useState('');
-  const [species, setSpecies] = useState('');
-  const [breed, setBreed] = useState('');
-  const [gender, setGender] = useState('');
-  const [image, setImage] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState<number | ''>('');
-  const [message, setMessage] = useState<string | null>(null);
+interface Pet {
+  id: number;
+  name: string;
+  species: string;
+  breed: string;
+  gender: string;
+  image: string;
+  description: string;
+  price: number;
+}
+
+const EditPetForm: React.FC<{ pet: Pet; onUpdate: () => void }> = ({
+  pet,
+  onUpdate,
+}) => {
+  const [name, setName] = useState(pet.name);
+  const [species, setSpecies] = useState(pet.species);
+  const [breed, setBreed] = useState(pet.breed);
+  const [gender, setGender] = useState(pet.gender);
+  const [image, setImage] = useState(pet.image);
+  const [description, setDescription] = useState(pet.description);
+  const [price, setPrice] = useState<number | ''>(pet.price);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await petService.createPet({ name, species, breed, gender, image, description, price });
-      setMessage('Pet added successfully.');
-      setName('');
-      setSpecies('');
-      setBreed('');
-      setGender('');
-      setImage('');
-      setDescription('');
-      setPrice('');
-      onAdd(); // Refresh the list after adding
+      await petService.updatePet(pet.id, {
+        name,
+        species,
+        breed,
+        gender,
+        image,
+        description,
+        price,
+      });
+      onUpdate(); // Refresh after update
     } catch (err) {
       console.error(err);
-      setMessage('Failed to add pet.');
+      setError('Failed to update pet. Please try again.');
     }
   };
 
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Add a New Pet
+        Edit Pet
       </Typography>
-      {message && <Typography color="error" gutterBottom>{message}</Typography>}
+      {error && <Typography color="error" gutterBottom>{error}</Typography>}
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
         <TextField
           label="Name"
@@ -102,11 +116,11 @@ const AddPetForm: React.FC<{ onAdd: () => void }> = ({ onAdd }) => {
           margin="normal"
         />
         <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-          Add Pet
+          Save Changes
         </Button>
       </Box>
     </Container>
   );
 };
 
-export default AddPetForm;
+export default EditPetForm;
